@@ -3,6 +3,7 @@ import {
   DocumentEditorContainerComponent,
   Toolbar,
   Inject,
+  TableRowWidget,
 } from "@syncfusion/ej2-react-documenteditor";
 import PlaceholderTools from "./components/placeholder-tools";
 
@@ -83,12 +84,18 @@ const Editor = () => {
   const addTablePlaceholder = () =>{
     if(!editorObj.current) return;
     const { documentEditor } = editorObj.current;
-
+    debugger;
     const cell = documentEditor.selection.start.paragraph.associatedCell
     if(cell.rowIndex===1 && cell.columnIndex === 0){
-      return "Table.Start"
+      return "«Table.Start»"
     }
-
+    
+    const currentRow = cell.ownerTable.childWidgets[cell.rowIndex]
+    const colCount = (currentRow as TableRowWidget).childWidgets.length
+    if(cell.rowIndex === 1 && cell.columnIndex === (colCount-1) ){
+      return "«Table.End»"
+    }
+    return ""
   }
 
   return (
@@ -104,9 +111,9 @@ const Editor = () => {
           // Insert placeholder.value into the editor
           console.log(placeholder.value);
           let fieldCode: string = `MERGEFIELD  ${placeholder.label}  \\* MERGEFORMAT `;
-          let fieldResult: string = `${placeholder.value}`;
+          const prefix = addTablePlaceholder()
           
-
+          let fieldResult: string = `${prefix}${placeholder.value}`;
 
           editorObj.current?.documentEditor.editor.insertField(
             fieldCode,

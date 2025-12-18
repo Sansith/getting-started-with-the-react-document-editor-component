@@ -214,26 +214,38 @@ const Renderer = () => {
       documentEditor.editor.insertRow();
     }
   };
+
+  const processTablePlaceholders = () =>{
+     if (!editorObj.current?.documentEditor) return;
+    const { documentEditor } = editorObj.current;
+    documentEditor.selection.moveToDocumentStart();
+    documentEditor.search.find(`«Table.Start»`);
+
+    const cell = documentEditor.selection.start.paragraph.associatedCell;
+    
+    
+  }
   const replaceValues = () => {
     if (!editorObj.current?.documentEditor) return;
 
     const editor = editorObj.current.documentEditor;
+    
 
-    Object.entries(CUSTOMER_DATA).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        for (const element of TABLE_PLACEHOLDERS[
-          key as keyof typeof TABLE_PLACEHOLDERS
-        ]) {
-          replaceTableValues(key, element.code, value);
-        }
+    // Object.entries(CUSTOMER_DATA).forEach(([key, value]) => {
+    //   if (Array.isArray(value)) {
+    //     for (const element of TABLE_PLACEHOLDERS[
+    //       key as keyof typeof TABLE_PLACEHOLDERS
+    //     ]) {
+    //       replaceTableValues(key, element.code, value);
+    //     }
 
-        return;
-      }
+    //     return;
+    //   }
 
-      const stringValue = String(value);
-      editor.search.findAll(`«${key}»`, "None");
-      editor.search.searchResults.replaceAll(stringValue);
-    });
+    //   const stringValue = String(value);
+    //   editor.search.findAll(`«${key}»`, "None");
+    //   editor.search.searchResults.replaceAll(stringValue);
+    // });
   };
 
   const openFile = () => {
