@@ -228,7 +228,9 @@ const Renderer = () => {
   const replaceValues = () => {
     if (!editorObj.current?.documentEditor) return;
 
-    const editor = editorObj.current.documentEditor;
+    const {selection, search} = editorObj.current.documentEditor;
+    search.find("«Table.Start»")
+
     
 
     // Object.entries(CUSTOMER_DATA).forEach(([key, value]) => {
