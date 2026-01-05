@@ -8,6 +8,7 @@ import {
   ParagraphWidget,
   TextPosition,
   LineWidget,
+  DocumentEditor,
 } from "@syncfusion/ej2-react-documenteditor";
 import { TABLE_PLACEHOLDERS } from "./components/placeholder-tools";
 
@@ -121,8 +122,8 @@ const Renderer = () => {
     // Get first paragraph in below cell
     const firstPara = belowCell.firstChild as ParagraphWidget;
     if (!firstPara) return false;
-    
-    documentEditor.selection.handleDownKey()
+
+    documentEditor.selection.handleDownKey();
     // // **CORRECT WAY: Create TextPosition at paragraph start, then get hierarchical index**
     // const paraStartPos = new TextPosition(documentEditor);
 
@@ -146,8 +147,8 @@ const Renderer = () => {
     const currentCell = documentEditor.selection.start.paragraph.associatedCell;
     const currentRow = currentCell.ownerRow;
     const colCount = currentRow.childWidgets;
-    const rowCount = currentRow.ownerTable.childWidgets.length
-    if ((rowCount-2) < (items.length)) {
+    const rowCount = currentRow.ownerTable.childWidgets.length;
+    if (rowCount - 2 < items.length) {
       documentEditor.editor.insertRow(false);
     }
 
@@ -215,23 +216,80 @@ const Renderer = () => {
     }
   };
 
-  const processTablePlaceholders = () =>{
-     if (!editorObj.current?.documentEditor) return;
+  const processTablePlaceholders = () => {
+    if (!editorObj.current?.documentEditor) return;
     const { documentEditor } = editorObj.current;
     documentEditor.selection.moveToDocumentStart();
     documentEditor.search.find(`«Table.Start»`);
 
     const cell = documentEditor.selection.start.paragraph.associatedCell;
+  };
+
+  const extractPlaceholderInfo = (row: any) => {
+    debugger;
     
-    
-  }
+    for (const cell of row.childWidgets) {
+      for (const block of cell.childWidgets) {
+        if (!block.inlines) continue;
+        
+        for (const inline of block.inlines) {
+          const match = inline.text?.match(/«(.+?)\[\]\.(.+?)»/);
+          if (match) {
+            return {
+              listKey: match[1], // ACCOUNT_LIST
+              field: match[2], // ACCOUNT_ID
+            };
+          }
+        }
+      }
+    }
+    return null;
+  };
+
+const getCurrentTableContext = (documentEditor:DocumentEditor) => {
+  const cell = documentEditor.selection.start.paragraph?.associatedCell;
+  if (!cell) return null;
+
+  return {
+    currentCell:cell,
+    currentRow: cell.ownerRow,
+    table: cell.ownerRow.ownerTable,
+    currentColumnIndex: cell.columnIndex,
+    currentRowIndex : cell.rowIndex
+  };
+};
+
   const replaceValues = () => {
     if (!editorObj.current?.documentEditor) return;
 
-    const {selection, search} = editorObj.current.documentEditor;
-    search.find("«Table.Start»")
+    const { selection, search } = editorObj.current.documentEditor;
+    selection.clear();
+    selection.moveToDocumentStart();
+    search.find("«Table.Start»");
 
-    
+    if (search.searchResults.length < 1) {
+      console.log("No Tables");
+
+      return;
+    }
+
+    let tableCount = search.searchResults.length;
+    console.log({ tableCount });
+
+    while (tableCount > 0) {
+      const tableCtx = getCurrentTableContext(editorObj.current.documentEditor);
+      if (!tableCtx) {
+        console.log("No table context found");
+        return;
+      }
+
+      const { currentCell, currentColumnIndex,currentRow,currentRowIndex,table  } = tableCtx
+
+      const pInfo = extractPlaceholderInfo(currentRow)
+      console.log({pInfo});
+      
+      tableCount--
+    }
 
     // Object.entries(CUSTOMER_DATA).forEach(([key, value]) => {
     //   if (Array.isArray(value)) {

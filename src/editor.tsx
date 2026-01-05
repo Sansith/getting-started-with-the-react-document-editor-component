@@ -116,7 +116,7 @@ const Editor = () => {
           let fieldResult: string = `${prefix}${placeholder.value}`;
 
           editorObj.current?.documentEditor.editor.insertField(
-            fieldCode,
+            fieldResult,
             fieldResult
           );
         }}
