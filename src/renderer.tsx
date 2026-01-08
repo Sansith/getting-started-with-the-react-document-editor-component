@@ -137,6 +137,67 @@ const Renderer = () => {
     return true;
   };
 
+  const moveCursorToBelowCell = () => {
+  if (!editorObj.current?.documentEditor) return false;
+
+  const documentEditor = editorObj.current.documentEditor;
+  const selection = documentEditor.selection;
+
+  const currentCell = selection.start.paragraph?.associatedCell;
+  if (!currentCell) {
+    console.log("Cursor not inside a table cell");
+    return false;
+  }
+
+  const currentRow = currentCell.ownerRow;
+  const table = currentRow.ownerTable;
+  const columnIndex = currentCell.columnIndex;
+  const currentRowIndex = currentRow.index;
+
+  // Check if next row exists
+  if (currentRowIndex + 1 >= table.childWidgets.length) {
+    console.log("Already at last row");
+    return false;
+  }
+
+  const belowRow = table.childWidgets[currentRowIndex + 1] as TableRowWidget;
+  let belowCell: TableCellWidget | null = null;
+
+  // Find matching column (respecting colspan)
+  for (const cell of belowRow.childWidgets as TableCellWidget[]) {
+    if (
+      cell.columnIndex <= columnIndex &&
+      cell.columnIndex + cell.cellFormat.columnSpan - 1 >= columnIndex
+    ) {
+      belowCell = cell;
+      break;
+    }
+  }
+
+  if (!belowCell) return false;
+
+  const targetParagraph = belowCell.firstChild as ParagraphWidget;
+  if (!targetParagraph) return false;
+
+  // ---- THE IMPORTANT PART ----
+  // Create TextPosition at start of paragraph
+  const textPosition = new TextPosition(documentEditor);
+  textPosition.setPosition(
+    targetParagraph.firstChild as LineWidget,
+    false
+  );
+
+  // Convert to hierarchical index and select
+  const hierarchicalIndex =
+    selection.getHierarchicalIndexByPosition(textPosition);
+
+  // Use the hierarchical index string for selection
+  selection.select(hierarchicalIndex, hierarchicalIndex);
+
+  return true;
+};
+
+
   const addNewValueToNextRowCell = (value: string, items: any[]) => {
     if (!editorObj.current?.documentEditor) return;
     const { documentEditor } = editorObj.current;
@@ -151,7 +212,7 @@ const Renderer = () => {
       documentEditor.editor.insertRow(false);
     }
 
-    moveToBelowCell();
+    moveCursorToBelowCell();
     // documentEditor.selection.moveDown()
     //documentEditor.selection.moveToNextParagraph(); // Move to new row
     // documentEditor.selection.moveToParagraphStart(); // Start of new cell
@@ -189,9 +250,19 @@ const Renderer = () => {
 
     let row = cell.ownerRow;
     let table = row.ownerTable;
+
+
+        //before getting a new row , check if there are enough rows
+    while ((table.childWidgets.length - 2) < dataSource.length) {
+      documentEditor.editor.insertRow(false);
+    }
+    documentEditor.search.find(`«${listPlaceholder}[].${childPlaceholder}»`);
+
     const newRow = table.childWidgets[
       table.childWidgets.length - 1
     ] as TableRowWidget;
+
+
     const newCell = newRow.childWidgets[cell.columnIndex] as TableCellWidget;
 
     for (const item of dataSource) {
@@ -205,12 +276,14 @@ const Renderer = () => {
     console.log("Cell count in row:", row.childWidgets.length);
     console.log("Current row index:", row.index);
     console.log("Current column index:", cell.columnIndex);
+    
     if (documentEditor.selection.isTableSelected()) {
       let table = documentEditor.selection.getTable(
         documentEditor.selection.start,
         documentEditor.selection.end
       );
       console.log("Rows:", table.childWidgets.length);
+      cell.columnIndex=3
       documentEditor.editor.insertRow();
     }
   };

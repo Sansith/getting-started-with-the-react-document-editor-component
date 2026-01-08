@@ -109,7 +109,7 @@ const Editor = () => {
 
 
           editorObj.current?.documentEditor.editor.insertField(
-            fieldCode,
+            '',
             fieldResult
           );
         }}
