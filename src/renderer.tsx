@@ -11,36 +11,36 @@ import {
 } from "@syncfusion/ej2-react-documenteditor";
 import { TABLE_PLACEHOLDERS } from "./components/placeholder-tools";
 
-const CUSTOMER_DATA = {
-  REFERENCE_CODE: "CUS2024001",
-  MOTHER_MAIDEN_NAME: "Godzila",
-  MONTHLY_INCOME: 150000,
-  DEPENDANT_COUNT: 3,
-  REGISTERED_DATE: "2024-01-10T00:00:00.000+0000",
-  SPOUSE_NAME: "Kong Zila",
-  FATHER_NAME: "King Kong",
-  ACCOUNT_LIST: [
-    {
-      CURRENCY: "LKR",
-      ACCOUNT_TYPE: "COMM",
-      ACCOUNT_ID: 8260568,
-      ACTUAL_BALANCE: 101380,
-      AVAILABLE_BALANCE: 100380,
-      ACCOUNT_STATUS: "ACTIVE",
-      ACCOUNT_NUMBER: "60001100000478",
-    },
-    {
-      CURRENCY: "LKR",
-      ACCOUNT_TYPE: "COMM",
-      ACCOUNT_ID: 9219088,
-      ACTUAL_BALANCE: 10834.44,
-      AVAILABLE_BALANCE: 10834.44,
-      ACCOUNT_STATUS: "ACTIVE",
-      ACCOUNT_NUMBER: "50001100012097",
-    },
-  ],
-  LIVING_CATEGORY: "OWNED_HOUSE",
-};
+  const CUSTOMER_DATA = {
+    REFERENCE_CODE: "CUS2024001",
+    MOTHER_MAIDEN_NAME: "Godzila",
+    MONTHLY_INCOME: 150000,
+    DEPENDANT_COUNT: 3,
+    REGISTERED_DATE: "2024-01-10T00:00:00.000+0000",
+    SPOUSE_NAME: "Kong Zila",
+    FATHER_NAME: "King Kong",
+    ACCOUNT_LIST: [
+      {
+        CURRENCY: "LKR",
+        ACCOUNT_TYPE: "COMM",
+        ACCOUNT_ID: 8260568,
+        ACTUAL_BALANCE: 101380,
+        AVAILABLE_BALANCE: 100380,
+        ACCOUNT_STATUS: "ACTIVE",
+        ACCOUNT_NUMBER: "60001100000478",
+      },
+      {
+        CURRENCY: "LKR",
+        ACCOUNT_TYPE: "COMM",
+        ACCOUNT_ID: 9219088,
+        ACTUAL_BALANCE: 10834.44,
+        AVAILABLE_BALANCE: 10834.44,
+        ACCOUNT_STATUS: "ACTIVE",
+        ACCOUNT_NUMBER: "50001100012097",
+      },
+    ],
+    LIVING_CATEGORY: "OWNED_HOUSE",
+  };
 
 const Renderer = () => {
   const editorObj = useRef<DocumentEditorContainerComponent | null>(null);
